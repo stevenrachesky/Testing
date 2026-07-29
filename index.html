@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Draft Time Poll</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🏈 Draft Time Poll</h1>
+    <p class="subtitle">Mark the times that <strong>don't</strong> work for you. See everyone else's answers live below.</p>
+  </header>
+
+  <div id="offlineBanner" class="banner" hidden>
+    Firebase isn't configured yet, so answers are only being saved in this browser.
+    See <code>README.md</code> to connect a shared Firestore project so everyone sees the same results.
+  </div>
+
+  <section class="controls">
+    <label for="whoAmI">Who are you?</label>
+    <select id="whoAmI">
+      <option value="">Select your name…</option>
+    </select>
+  </section>
+
+  <section id="summary" class="summary" aria-live="polite">
+    <h2>Available times <span id="availableCount"></span></h2>
+    <div id="availableChips" class="chips"></div>
+  </section>
+
+  <section class="legend">
+    <span><i class="swatch unavailable"></i> Unavailable</span>
+    <span><i class="swatch available"></i> Everyone free</span>
+    <span><i class="swatch my-column"></i> Your column</span>
+  </section>
+
+  <div class="table-wrap">
+    <table id="pollTable">
+      <thead>
+        <tr id="headerRow">
+          <th class="corner">Date / Time</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
