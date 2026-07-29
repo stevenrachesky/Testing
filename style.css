@@ -204,6 +204,49 @@ header h1 {
   position: relative;
 }
 
+.loading-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: color-mix(in srgb, var(--bg) 65%, transparent);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 1rem;
+}
+
+.table-shell.loading .loading-overlay {
+  display: flex;
+}
+
+.table-shell.loading .table-wrap {
+  pointer-events: none;
+  filter: blur(1px);
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--blue);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.4s; }
+}
+
 .table-shell.dimmed {
   opacity: 0.45;
   pointer-events: none;

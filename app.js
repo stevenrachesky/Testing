@@ -98,7 +98,9 @@ async function createSupabaseStore() {
   return {
     subscribe(callback) {
       notify = callback;
-      fetchAll().then(callback).catch(() => {});
+      fetchAll().then(callback).catch(() => {
+        if (!initialLoaded) showLoadingError();
+      });
       const channel = supabase
         .channel("responses-changes")
         .on("postgres_changes", { event: "*", schema: "public", table: "responses" }, () => {
@@ -161,6 +163,21 @@ let store;
 let responses = {}; // name -> { unavailable: [slotId], done: bool }
 let activeName = localStorage.getItem(ACTIVE_NAME_KEY) || "";
 let justMe = false;
+// Voting stays blocked until the first snapshot arrives — otherwise a tap
+// before existing votes load would overwrite them with a near-empty list.
+let initialLoaded = false;
+
+function finishLoading() {
+  initialLoaded = true;
+  document.getElementById("tableShell").classList.remove("loading");
+}
+
+function showLoadingError() {
+  document.querySelector("#loadingOverlay .spinner").style.display = "none";
+  document.getElementById("loadingText").textContent =
+    "Couldn't load votes — check your connection.";
+  showToast("Couldn't load votes.", "error", () => location.reload());
+}
 
 const cellMap = new Map(); // `${slotId}|${name}` -> <td>
 const rowMap = new Map(); // slotId -> { tr, badge, okMark }
@@ -215,7 +232,7 @@ function setupButtons() {
     render();
   });
   document.getElementById("doneBtn").addEventListener("click", () => {
-    if (!activeName) return;
+    if (!activeName || !initialLoaded) return;
     const current = entryFor(activeName);
     persist(activeName, { ...current, done: !current.done });
   });
@@ -263,6 +280,7 @@ async function persist(name, entry) {
 }
 
 function handleCellActivate(td) {
+  if (!initialLoaded) return;
   const name = td.dataset.name;
   if (name !== activeName) return;
   const slotId = td.dataset.slot;
@@ -481,7 +499,12 @@ async function init() {
   window.addEventListener("resize", updateScrollHint);
 
   if (isConfigured()) {
-    store = await createSupabaseStore();
+    try {
+      store = await createSupabaseStore();
+    } catch {
+      showLoadingError();
+      return;
+    }
   } else {
     document.getElementById("offlineBanner").hidden = false;
     store = createLocalStore();
@@ -489,6 +512,7 @@ async function init() {
 
   store.subscribe((data) => {
     responses = data;
+    finishLoading();
     render();
   });
 
