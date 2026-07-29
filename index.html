@@ -43,7 +43,11 @@
     <span><i class="swatch my-column"></i> Your column</span>
   </section>
 
-  <div class="table-shell" id="tableShell">
+  <div class="table-shell loading" id="tableShell">
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="spinner" aria-hidden="true"></div>
+      <span id="loadingText">Loading everyone's votes…</span>
+    </div>
     <div class="table-wrap" id="tableWrap">
       <table id="pollTable">
         <thead>
