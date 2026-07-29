@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="theme-color" content="#fafbfc" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#14181c" media="(prefers-color-scheme: dark)" />
 <title>Draft Time Poll</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏈</text></svg>" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -22,28 +25,38 @@
     <select id="whoAmI">
       <option value="">Select your name…</option>
     </select>
+    <button id="doneBtn" type="button" hidden aria-pressed="false">I'm done</button>
+    <button id="justMeBtn" type="button" hidden aria-pressed="false">Just me</button>
   </section>
 
+  <div id="pickPrompt" class="pick-prompt">👆 Pick your name above to start marking times</div>
+
   <section id="summary" class="summary" aria-live="polite">
-    <h2>Available times <span id="availableCount"></span></h2>
+    <h2 id="summaryTitle">Available times</h2>
     <div id="availableChips" class="chips"></div>
+    <div id="doneStatus" class="done-status"></div>
   </section>
 
   <section class="legend">
-    <span><i class="swatch unavailable"></i> Unavailable</span>
-    <span><i class="swatch available"></i> Everyone free</span>
+    <span><i class="swatch unavailable"></i> ✕ Unavailable</span>
+    <span><i class="swatch available"></i> ✓ Everyone free</span>
     <span><i class="swatch my-column"></i> Your column</span>
   </section>
 
-  <div class="table-wrap">
-    <table id="pollTable">
-      <thead>
-        <tr id="headerRow">
-          <th class="corner">Date / Time</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+  <div class="table-shell" id="tableShell">
+    <div class="table-wrap" id="tableWrap">
+      <table id="pollTable">
+        <thead>
+          <tr id="headerRow"></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden>
+    <span id="toastMsg"></span>
+    <button id="toastRetry" type="button" hidden>Retry</button>
   </div>
 
   <script type="module" src="app.js"></script>
