@@ -1,4 +1,4 @@
-import { firebaseConfig } from "./firebase-config.js";
+import { supabaseConfig } from "./supabase-config.js";
 
 const ROSTER = [
   "Steven", "Shiv", "Harry", "Oliver", "Henry", "Miles",
@@ -47,32 +47,42 @@ function generateSlots() {
 const SLOTS = generateSlots();
 
 function isConfigured() {
-  return Boolean(firebaseConfig.apiKey) && firebaseConfig.apiKey !== "YOUR_API_KEY_HERE";
+  return (
+    Boolean(supabaseConfig.url) &&
+    supabaseConfig.url !== "https://YOUR_PROJECT_REF.supabase.co" &&
+    Boolean(supabaseConfig.anonKey) &&
+    supabaseConfig.anonKey !== "YOUR_ANON_KEY"
+  );
 }
 
-async function createFirestoreStore() {
-  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-  const { getFirestore, doc, setDoc, collection, onSnapshot, serverTimestamp } =
-    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+async function createSupabaseStore() {
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey);
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  async function fetchAll() {
+    const { data, error } = await supabase.from("responses").select("name, unavailable");
+    if (error) throw error;
+    const result = {};
+    for (const row of data) result[row.name] = row.unavailable || [];
+    return result;
+  }
 
   return {
     subscribe(callback) {
-      return onSnapshot(collection(db, "responses"), (snapshot) => {
-        const data = {};
-        snapshot.forEach((docSnap) => {
-          data[docSnap.id] = docSnap.data().unavailable || [];
-        });
-        callback(data);
-      });
+      fetchAll().then(callback);
+      const channel = supabase
+        .channel("responses-changes")
+        .on("postgres_changes", { event: "*", schema: "public", table: "responses" }, () => {
+          fetchAll().then(callback);
+        })
+        .subscribe();
+      return () => supabase.removeChannel(channel);
     },
     async save(name, unavailable) {
-      await setDoc(doc(db, "responses", name), {
-        unavailable,
-        updatedAt: serverTimestamp(),
-      });
+      const { error } = await supabase
+        .from("responses")
+        .upsert({ name, unavailable, updated_at: new Date().toISOString() });
+      if (error) throw error;
     },
   };
 }
@@ -239,7 +249,7 @@ async function init() {
   renderBody();
 
   if (isConfigured()) {
-    store = await createFirestoreStore();
+    store = await createSupabaseStore();
   } else {
     document.getElementById("offlineBanner").hidden = false;
     store = createLocalStore();
