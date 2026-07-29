@@ -390,6 +390,32 @@ function renderSummary() {
   document.getElementById("doneStatus").textContent = `${doneCount} of ${ROSTER.length} marked done`;
 }
 
+function renderNotVoted() {
+  const el = document.getElementById("notVoted");
+  const waiting = ROSTER.filter((name) => !entryFor(name).done);
+  el.innerHTML = "";
+
+  const title = document.createElement("h2");
+  el.appendChild(title);
+
+  if (waiting.length === 0) {
+    title.textContent = "✅ Everyone has voted";
+    return;
+  }
+
+  title.textContent = `Waiting on ${waiting.length} of ${ROSTER.length}`;
+  const list = document.createElement("div");
+  list.className = "chips";
+  for (const name of waiting) {
+    const started = name in responses; // has a saved row but hasn't pressed "I'm done"
+    const chip = document.createElement("span");
+    chip.className = "chip waiting";
+    chip.textContent = started ? `${name} · started` : name;
+    list.appendChild(chip);
+  }
+  el.appendChild(list);
+}
+
 function render() {
   for (const slot of SLOTS) {
     const conflicts = conflictsFor(slot.id);
@@ -432,6 +458,7 @@ function render() {
   }
 
   renderSummary();
+  renderNotVoted();
   updateScrollHint();
 }
 
