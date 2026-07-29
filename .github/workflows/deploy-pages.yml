@@ -1,0 +1,31 @@
+name: Deploy poll to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+      - claude/fantasy-draft-time-poll-bc6be7
+    paths:
+      - index.html
+      - style.css
+      - app.js
+      - supabase-config.js
+      - .github/workflows/deploy-pages.yml
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect site files
+        run: |
+          mkdir site
+          cp index.html style.css app.js supabase-config.js site/
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

@@ -30,6 +30,7 @@ You'll see a yellow banner reminding you of this.
    create table if not exists responses (
      name text primary key,
      unavailable text[] not null default '{}',
+     done boolean not null default false,
      updated_at timestamptz not null default now()
    );
 
@@ -72,3 +73,11 @@ You'll see a yellow banner reminding you of this.
    and share the link with the league. Everyone picks their name from the "Who are you?"
    dropdown and taps cells in their own column to mark times that don't work — results
    update live for everyone.
+
+### Deployment
+
+The live site is served by GitHub Pages from the `gh-pages` branch at
+<https://stevenrachesky.github.io/Testing/>. The workflow in
+`.github/workflows/deploy-pages.yml` republishes it automatically whenever any of the
+four app files change on `master` (or the working feature branch), so there's no
+manual copy step — just push.
