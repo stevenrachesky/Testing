@@ -18,6 +18,9 @@
   --banner-text: #6b5300;
   --toast-error-bg: #c93a30;
   --toast-ok-bg: #1c7a34;
+  --amber-bg: #fff4dc;
+  --amber-border: #e8c56a;
+  --amber-text: #8a5a00;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,6 +44,9 @@
     --banner-text: #e8d48a;
     --toast-error-bg: #a03830;
     --toast-ok-bg: #1f6b38;
+    --amber-bg: #3c3016;
+    --amber-border: #6e5a24;
+    --amber-text: #f0c96a;
   }
 }
 
@@ -165,6 +171,58 @@ header h1 {
 
 .chip.best {
   color: var(--text);
+}
+
+.one-away {
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.one-away h2 {
+  margin: 0 0 0.15rem;
+  font-size: 1rem;
+  color: var(--amber-text);
+}
+
+.one-away-sub {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.one-away-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 0.35rem;
+}
+
+.one-away-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--amber-border);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.one-away-slot {
+  font-weight: 600;
+}
+
+.one-away-who {
+  color: var(--red);
+  background: var(--red-bg);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .done-status {
