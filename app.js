@@ -379,6 +379,7 @@ function buildTable() {
 function renderSummary() {
   const ranked = SLOTS.map((slot) => ({ slot, conflicts: conflictsFor(slot.id) }));
   const open = ranked.filter((r) => r.conflicts.length === 0);
+  const oneAway = ranked.filter((r) => r.conflicts.length === 1);
   const title = document.getElementById("summaryTitle");
   const chips = document.getElementById("availableChips");
   chips.innerHTML = "";
@@ -393,6 +394,9 @@ function renderSummary() {
   if (open.length > 0) {
     title.textContent = `Available times (${open.length} of ${SLOTS.length})`;
     for (const r of open) addChip(`✓ ${slotLabel(r.slot)}`, false);
+  } else if (oneAway.length > 0) {
+    // The one-away card below carries the detail — don't duplicate it here.
+    title.textContent = "No times work for everyone yet — closest are one person away ⬇";
   } else {
     const min = Math.min(...ranked.map((r) => r.conflicts.length));
     const best = ranked.filter((r) => r.conflicts.length === min);
@@ -402,6 +406,23 @@ function renderSummary() {
       const extra = r.conflicts.length > 3 ? ` +${r.conflicts.length - 3} more` : "";
       addChip(`${slotLabel(r.slot)} · ✕ ${shown}${extra}`, true);
     }
+  }
+
+  const oneAwaySection = document.getElementById("oneAway");
+  oneAwaySection.hidden = oneAway.length === 0;
+  const list = document.getElementById("oneAwayList");
+  list.innerHTML = "";
+  for (const r of oneAway) {
+    const row = document.createElement("div");
+    row.className = "one-away-row";
+    const label = document.createElement("span");
+    label.className = "one-away-slot";
+    label.textContent = slotLabel(r.slot);
+    const who = document.createElement("span");
+    who.className = "one-away-who";
+    who.textContent = `✕ ${r.conflicts[0]}`;
+    row.append(label, who);
+    list.appendChild(row);
   }
 
   const doneCount = ROSTER.filter((name) => entryFor(name).done).length;
